@@ -591,6 +591,8 @@ class Main:
         global download_counter
         global download_succes
         global reportdata
+        extrathumbscount = 1
+        extrafanartcount = 1
         image_list_total = len(image_list)
         if not image_list_total == 0:
             failcount = 0
@@ -612,8 +614,14 @@ class Main:
                             if startup['mode'] in ['customgui','gui'] or not self.fileops._exists(item['localfilename']):
                                 self.fileops._downloadfile(item)
                         item['url'] = item['localfilename'].replace('\\','\\\\')
-                    if item['art_type'] in ['extrathumbs', 'extrafanart']:
-                        self.fileops._downloadfile(item)
+                    if item['art_type'] == 'extrathumbs':
+                        extrathumbs = item['art_type'] + '%i' % (extrathumbscount)
+                        xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.SetMovieDetails", "params": { "movieid": %i, "art": { "%s": "%s" }}, "id": 1 }' %(item['dbid'], extrathumbs, item['url']))
+                        extrathumbscount +=1
+                    if item['art_type'] == 'extrafanart':
+                        extrafanart = item['art_type'] + '%i' % (extrafanartcount)
+                        xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.SetMovieDetails", "params": { "movieid": %i, "art": { "%s": "%s" }}, "id": 1 }' %(item['dbid'], extrafanart, item['url']))
+                        extrafanartcount +=1
                     elif item['mediatype'] == 'movie':
                         xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.SetMovieDetails", "params": { "movieid": %i, "art": { "%s": "%s" }}, "id": 1 }' %(item['dbid'], item['art_type'], item['url']))
                     elif item['mediatype'] == 'tvshow':
